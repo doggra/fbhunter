@@ -1,3 +1,23 @@
+function send_message(subject, message) {
+  chrome.runtime.sendMessage({
+    from: 'popup',
+    subject: subject,
+    content: message
+  }, function(response) {
+
+    // Get background storage.
+    if (response.subject == 'retrieve_storage') {
+      var storage = response.response;
+      if (storage != undefined) {
+        $("#search-box").html(storage);
+        set_event_handlers();
+      }
+    }
+
+  });
+}
+
+
 function build_URL() {
   var url = "https://facebook.com/search"
 
@@ -45,6 +65,7 @@ function build_URL() {
   return url
 }
 
+
 function add_new_entry(placeholder) {
 
   var last_entry = $('.entry').eq(-1);
@@ -52,12 +73,11 @@ function add_new_entry(placeholder) {
 
   new_entry.children('.condition').html('<button class="btn btn-sm btn-link">ADD</button>');
   last_entry.after(new_entry);
-
+  return new_entry
 }
 
-$(document).ready(function () {
 
-  // Entry event handlers.
+function set_event_handlers() {
 
   $(".del-btn").click(function() {
     var entry_to_delete = $(this).parent().parent();
@@ -67,20 +87,36 @@ $(document).ready(function () {
     }
   });
 
-  // Must be after declaration of entry event handlers, so these can be copied as well.
-  var search_table = $("table#search");
+  // After declaration of entry event handlers, so these can be copied as well.
+  // Alson, clear placeholders text input.
   var placeholder = $(".entry").clone(true).eq(0);
+  placeholder.children('td.text').children('input.entry-text').attr('value', '');
 
   // Extension main event handlers.
+  $('.entry-text').on("change paste keyup", function (event) {
+    $(this).attr('value', $(this).val());
+  });
 
+  // Add new entry.
   $("#and-btn").click(function () {
-    add_new_entry(placeholder);
+    var new_entry = add_new_entry(placeholder);
+    new_entry.children('td.text').children('input.entry-text').on("change paste keyup", function (event) {
+      $(this).attr('value', $(this).val());
+    });
   });
 
+  // Search!
   $("#search-btn").click(function () {
-    // build_URL();
+    send_message("save_bg_storage", $("#search-box").html());
     chrome.tabs.create({ url: build_URL() });
-    chrome.runtime.sendMessage("Hello there!");
   });
+
+}
+
+
+$(document).ready(function () {
+
+  send_message('get_bg_storage');
+  set_event_handlers();
 
 });

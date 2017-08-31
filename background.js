@@ -1,11 +1,15 @@
-chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
+var bg_storage;
 
-	console.log(response, sender);
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
-	// // First, validate the message's structure
-	// if ((msg.from === 'content') && (msg.subject === 'showPageAction')) {
-	//   // Enable the page-action for the requesting tab
-	//   chrome.pageAction.show(sender.tab.id);
-	// }
+	if (message.subject == 'save_bg_storage') {
+		bg_storage = message.content;
+	}
+
+	if (message.subject == 'get_bg_storage') {
+		sendResponse({
+			subject: 'retrieve_storage',
+			response: bg_storage
+		});
+	}
 });
-
