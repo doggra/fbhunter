@@ -24,10 +24,18 @@ function build_URL() {
   // Iterate through entries and build up URL search query
   var entries = $(".entry");
   var iterations = 0;
+  var last_type;
+
   entries.each(function(i) {
 
-    var entry_type = $(this).children('td.select').children('select.entry-type').children('option:selected').val();
-    var entry_text = $(this).children('td.text').children('input.entry-text').val();
+    var entry_type = $(this).attr("type");
+    if ((entry_type == "AND") && (last_type == "OR")) {
+      url += "/union"
+    }
+    last_type = entry_type;
+
+    var entry_select = $(this).children('td.select').children('select.entry-select').children('option:selected').val();
+    var entry_text = $(this).children('td.text').children('input.entry-text').val().replace(" ", "+");;
 
     // Skip entry if no text provided
     if (entry_text == "" || entry_text == undefined || entry_text == null) {
@@ -36,22 +44,22 @@ function build_URL() {
       iterations++;
     }
 
-    if (entry_type == 'liked') {
+    if (entry_select == 'liked') {
       url += "/str/"+entry_text+"/pages-named/likers"
-    } else if (entry_type == 'member_of') {
+    } else if (entry_select == 'member_of') {
       url += "/str/"+entry_text+"/groups-named/members"
-    } else if (entry_type == 'follower_of') {
+    } else if (entry_select == 'follower_of') {
       url += "/str/"+entry_text+"/users-named/followers"
-    } else if (entry_type == 'current_job') {
+    } else if (entry_select == 'current_job') {
       url += "/str/"+entry_text+"/pages-named/employees/present"
-    } else if (entry_type == 'past_job') {
+    } else if (entry_select == 'past_job') {
       url += "/str/"+entry_text+"/pages-named/employees/past"
     // Same as current job?
-    } else if (entry_type == 'work_at') {
+    } else if (entry_select == 'work_at') {
       url += "/str/"+entry_text+"/pages-named/employees/present"
-    } else if (entry_type == 'lives_in') {
+    } else if (entry_select == 'lives_in') {
       url += "/str/"+entry_text+"/pages-named/residents/present"
-    } else if (entry_type == 'lived_in') {
+    } else if (entry_select == 'lived_in') {
       url += "/str/"+entry_text+"/pages-named/residents/past"
     }
 
@@ -66,14 +74,39 @@ function build_URL() {
 }
 
 
-function add_new_entry(placeholder) {
+function add_new_entry(placeholder, type) {
 
   var last_entry = $('.entry').eq(-1);
-  var new_entry = placeholder.clone(true);
+  var last_or_entries = $('.entry[type="OR"]');
+  var last_or_entry;
 
-  new_entry.children('.condition').html('<button class="btn btn-sm btn-link">ADD</button>');
-  last_entry.after(new_entry);
-  return new_entry
+  if (last_or_entries.length > 0) {
+    last_or_entry = last_or_entries.eq(-1)
+  } else {
+    last_or_entry = $('.entry').eq(0);
+  }
+
+  var new_entry = placeholder.clone(true);
+  new_entry.attr("type", type);
+  new_entry.children('.condition').html('<button class="btn btn-sm btn-link">'+type+'</button>');
+
+  if (type == "AND") {
+    last_entry.after(new_entry);
+  } else if (type == "OR") {
+    last_or_entry.after(new_entry);
+  }
+
+  new_entry.children('td.text').children('input.entry-text').on("change paste keyup", function (event) {
+    $(this).attr('value', $(this).val());
+  });
+
+
+  new_entry.children('td.select').children('select.entry-select').on("change", function (event) {
+    var opt = $(this).children("option:selected");
+    $(this).children('option[selected="selected"]').removeAttr("selected");
+    opt.attr("selected", "selected");
+  });
+
 }
 
 
@@ -88,21 +121,29 @@ function set_event_handlers() {
   });
 
   // After declaration of entry event handlers, so these can be copied as well.
-  // Alson, clear placeholders text input.
+  // Alson, clear placeholders select/text inputs.
   var placeholder = $(".entry").clone(true).eq(0);
   placeholder.children('td.text').children('input.entry-text').attr('value', '');
+  placeholder.children('td.select').children('select.entry-select').children('option[selected="selected"]').removeAttr('selected');
 
-  // Extension main event handlers.
+  $('.entry-select').on("change", function (event) {
+    var opt = $(this).children("option:selected");
+    $(this).children('option[selected="selected"]').removeAttr("selected");
+    opt.attr("selected", "selected");
+  });
+
   $('.entry-text').on("change paste keyup", function (event) {
     $(this).attr('value', $(this).val());
   });
 
-  // Add new entry.
+  // Add new ADD entry.
   $("#and-btn").click(function () {
-    var new_entry = add_new_entry(placeholder);
-    new_entry.children('td.text').children('input.entry-text').on("change paste keyup", function (event) {
-      $(this).attr('value', $(this).val());
-    });
+    add_new_entry(placeholder, "AND");
+  });
+
+  // Add new OR entry.
+  $("#or-btn").click(function () {
+    add_new_entry(placeholder, "OR");
   });
 
   // Search!
@@ -115,8 +156,6 @@ function set_event_handlers() {
 
 
 $(document).ready(function () {
-
   send_message('get_bg_storage');
   set_event_handlers();
-
 });
