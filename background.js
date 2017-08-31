@@ -2,7 +2,7 @@ var bg_storage;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
-	console.log(message);
+	// console.log(message);
 
 	if (message.subject == 'save_bg_storage') {
 		bg_storage = message.content;
