@@ -2,8 +2,8 @@
   "manifest_version": 2,
 
   "name": "FB Hunter",
-  "description": "This tool will help you find people on Facebook. Find them by likes, jobs, locations etc.",
-  "version": "0.1",
+  "description": "This tool will help you find people on Facebook. Find them by likes, follows, jobs, places etc. and export results as CSV file.",
+  "version": "0.9",
 
   "browser_action": {
     "default_icon": "icon.png",
@@ -17,8 +17,12 @@
 
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["content_script.js"]
+      "matches": ["http://*.facebook.com/search/*", "https://*.facebook.com/search/*"],
+      "js": ["jquery-3.2.1.min.js", "content_script.js"]
+    },
+    {
+      "matches": ["http://*.facebook.com/*sk=about", "https://*.facebook.com/*sk=about"],
+      "js": ["jquery-3.2.1.min.js", "scrape_user_about.js"]
     }
   ],
 
@@ -27,7 +31,7 @@
   ],
 
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["jquery-3.2.1.min.js", "background.js"],
     "persistent": false
   }
 }

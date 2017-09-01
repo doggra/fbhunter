@@ -12,6 +12,7 @@
     <style>
       #wrapper { margin: 20px 0px; min-width: 600px; }
       h1 { font-size: 1.1em; }
+      h2 { font-size: 0.8em; }
       table#search td { padding: 0.25rem; border-top: none; }
       table#search .condition { width: 50px; }
       table#search .condition button:hover, table#search .condition button:focus {
@@ -21,18 +22,22 @@
       table#search .del-btn, table#search .del-btn-box { width: 34px; }
       :focus, :active {outline: none !important; text-decoration: none;}
       #search-btn-box { padding-top: 20px !important; }
+      button#search-btn { background-color: #3b5998; border-color: #3b5998; }
+      .btn-link { font-weight:bold; color: #3b5998; }
+      .btn-link:hover { color: #3b5998; }
     </style>
 
   </head>
   <body>
     <div id="wrapper">
       <div id="search-box" class="container-fluid">
-        
+        <form id="search-form">
         <table class="table" id="search">
           <tr>
             <td></td>
             <td colspan="3">
-              <h1>Search Facebook</h1>
+              <h1><b>FB Hunter</b></h1>
+              <h2>Find people on Facebook</h2>
             </td>
             <td></td>
           </tr>
@@ -54,28 +59,32 @@
               <input type="text" class="entry-text form-control form-control-sm">
             </td>
             <td class="del-btn-box">
-              <button class="del-btn float-right btn btn-sm btn-secondary"><b>X</b></button>
+              <button type="button" class="del-btn float-right btn btn-sm btn-secondary"><b>X</b></button>
             </td>
             <td style="width:50px;"></td>
           </tr>
           <tr>
             <td></td>
             <td id="buttons" colspan="3">
-              <button id="and-btn" class="float-right btn btn-sm btn-secondary">AND</button>
-              <button id="or-btn" class="float-right btn btn-sm btn-secondary">OR</button>
+              <button type="button" id="and-btn" class="float-right btn btn-sm btn-secondary">AND</button>
+              <button type="button" id="or-btn" class="float-right btn btn-sm btn-secondary">OR</button>
             </td>
             <td></td>
           </tr>
           <tr>
             <td></td>
             <td id="search-btn-box" colspan="3">
-              <button id="search-btn" class="btn btn-block btn-primary">
+              <button type="submit" id="search-btn" class="btn btn-block btn-primary">
                 Search Facebook
+              </button>
+              <button type="button" id="export-btn" class="btn btn-block btn-success">
+                Export results
               </button>
             </td>
             <td></td>
           </tr>
         </table>
+        </form>
       </div>
     </div>
   </body>

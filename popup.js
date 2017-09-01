@@ -121,7 +121,7 @@ function set_event_handlers() {
   });
 
   // After declaration of entry event handlers, so these can be copied as well.
-  // Alson, clear placeholders select/text inputs.
+  // Also clear placeholders select/text inputs.
   var placeholder = $(".entry").clone(true).eq(0);
   placeholder.children('td.text').children('input.entry-text').attr('value', '');
   placeholder.children('td.select').children('select.entry-select').children('option[selected="selected"]').removeAttr('selected');
@@ -147,13 +147,16 @@ function set_event_handlers() {
   });
 
   // Search!
-  $("#search-btn").click(function () {
+  $("#search-form").submit(function(){
     send_message("save_bg_storage", $("#search-box").html());
-    chrome.tabs.create({ url: build_URL() });
+    send_message("search", build_URL());
   });
 
+  // Export!
+  $("#export-btn").click(function () {
+    send_message("export", build_URL());
+  });
 }
-
 
 $(document).ready(function () {
   send_message('get_bg_storage');
