@@ -159,6 +159,6 @@ function set_event_handlers() {
 }
 
 $(document).ready(function () {
-  send_message('get_bg_storage');
+  send_message('get_bg_storage', '');
   set_event_handlers();
 });
