@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>FB Hunter</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+	<script src="jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="options.js"></script>
+	<style>
+		h1 { font-size: 1.1em; }
+		h2 { font-size: 0.8em; }
+		#wrapper { margin-top: 50px; }
+		table#saved_queries { width: 600px; }
+	</style>
+
+</head>
+<body>
+	<div id="wrapper" class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<h1><b>FB Hunter</b></h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<h2>Saved queries</h2>
+				<table class="table table-striped" id="saved_queries">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Name of query</td>
+							<td>Action buttons</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<button class="btn btn-primary btn-sm" id="clear_storage">Clear storage</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

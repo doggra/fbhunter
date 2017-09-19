@@ -29,6 +29,8 @@ chrome.extension.onMessage.addListener(function (message, sender, sendResponse) 
 
 	if (message.subject == 'export') {
 
+		console.log(message);
+
 		// Scroll to end of results.
 		var scrolling = setInterval(function () {
 			window.scrollTo(0,document.body.scrollHeight);

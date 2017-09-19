@@ -109,7 +109,6 @@ function add_new_entry(placeholder, type) {
 
 }
 
-
 function set_event_handlers() {
 
   $(".del-btn").click(function() {
@@ -155,6 +154,57 @@ function set_event_handlers() {
   // Export!
   $("#export-btn").click(function () {
     send_message("export", build_URL());
+  });
+
+  // Save query
+  $("#save-btn").click(function () {
+
+    first_entry = $(".entry-text").eq(0);
+
+    var storage = chrome.storage.local;
+    var query_name = $("#save_query_name").val();
+    var search_box = $("form#search-form table#search tbody").html();
+
+    if (first_entry.val() == '') {
+      var status = $('#status_notify');
+      status.text('Please specify search filters first.');
+      setTimeout(function() {
+        status.text('');
+      }, 1250);
+      return
+    }
+    if (query_name == '') {
+      var status = $('#status_notify');
+      status.text('Please specify query name.');
+      setTimeout(function() {
+        status.text('');
+      }, 1250);
+      return
+    }
+
+    
+
+
+    var obj = {};
+    obj[query_name] = build_URL();
+    storage.set(obj, function () {
+      var status = $('#status_notify');
+      status.text('Query saved.');
+      setTimeout(function() {
+        status.text('');
+      }, 1250);
+    });
+  });
+
+  // Options page
+  $('#go-to-options-btn').click(function() {
+    if (chrome.runtime.openOptionsPage) {
+      // New way to open options pages, if supported (Chrome 42+).
+      chrome.runtime.openOptionsPage();
+    } else {
+      // Reasonable fallback.
+      window.open(chrome.runtime.getURL('options.html'));
+    }
   });
 }
 

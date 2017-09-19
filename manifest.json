@@ -4,7 +4,7 @@
   "name": "FB Hunter",
   "description": "This tool will help you find people on Facebook. Find them by likes, follows, jobs, places etc. and export results as CSV file.",
   "version": "0.9",
-
+  "options_page": "options.html",
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html",
@@ -27,7 +27,8 @@
   ],
 
   "permissions": [
-    "tabs"
+    "tabs",
+    "storage"
   ],
 
   "background": {

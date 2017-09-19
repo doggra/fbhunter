@@ -2,6 +2,8 @@ var bg_storage;
 var scraper_tab;
 var users_to_scrape;
 var scraped_data = [];
+var scraping_phase;
+var target_user;
 
 
 function send_message(subject, message) {
@@ -34,10 +36,10 @@ function download_csv(csv_string) {
 function scrape_next_user() {
 
 	// Get next user ID.
-	var user_id = users_to_scrape.pop();
+	target_user = users_to_scrape.pop();
 
 	// Scraping finished!
-	if (user_id == undefined) {
+	if (target_user == undefined) {
 
 		csv_string = "data:text/csv;charset=utf-8,,Facebook ID|Username|URL|Phones|E-mails|Location|Works at|Address|Websites|Social Links|Birthday\n";
 
@@ -61,25 +63,22 @@ function scrape_next_user() {
 
 		chrome.tabs.remove(scraper_tab);
 		download_csv(csv_string);
+
+		scraping_phase = undefined;
+
 		return 
 	}
 
-	//Go to users about pages.
-	var user_about = "https://www.facebook.com/profile.php?id="+user_id+"&sk=about";
+	// Go to users about pages.
+	var user_about = "https://www.facebook.com/profile.php?id="+target_user+"&sk=about";
 	chrome.tabs.update(scraper_tab, {url: user_about});
 
-	setTimeout(function(){
-		chrome.tabs.sendMessage(scraper_tab, {
-			subject: 'scrape_user',
-			fid: user_id
-		});
-	}, 4000);
 }
 
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
-	// console.log(message);
+	console.log(message);
 
 	if (message.subject == 'search') {
 		chrome.tabs.create({ url: message.content });
@@ -88,12 +87,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (message.subject == 'export') {
 		chrome.tabs.create({ url: message.content }, function(tab) {
 			scraper_tab = tab.id;
-			setTimeout(function(){
-				chrome.tabs.sendMessage(scraper_tab, {
-					subject: 'export'
-				});
-			}, 3000);
-
+			scraping_phase = 0;
 		});
 	}
 
@@ -120,4 +114,29 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 		});
 	}
 
+});
+
+
+chrome.tabs.onUpdated.addListener(function (tabId , info) {
+  if (info.status === 'complete') {
+    if (scraper_tab == tabId) {
+    	if (scraping_phase == 0) {
+
+    		chrome.tabs.sendMessage(scraper_tab, {
+				subject: 'export'
+			});
+
+			scraping_phase = 1;
+
+    	} else if (scraping_phase == 1) {
+
+			chrome.tabs.sendMessage(scraper_tab, {
+				subject: 'scrape_user',
+				fid: target_user
+			});
+
+    	}
+		
+    }
+  }
 });
